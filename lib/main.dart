@@ -1,29 +1,26 @@
-import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
-import 'module/presentation/pages/home_page.dart';
+import 'package:flutter/material.dart';
+import 'module/data/repositories/firebase_repository_impl.dart';
 import 'module/presentation/pages/old_home_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-  runApp(const MyApp());
+  await Firebase.initializeApp();
+
+  final firebaseRepository = FirebaseRepositoryImpl();
+  await firebaseRepository.initialize();
+  runApp(MyApp(firebaseRepository: firebaseRepository));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final FirebaseRepositoryImpl firebaseRepository;
+
+  const MyApp({super.key, required this.firebaseRepository});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Music Player',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const HomePage(title: 'Flutter Music Player Home Page'),
+      home: HomePage(firebaseRepository: firebaseRepository),
     );
   }
 }
