@@ -4,16 +4,21 @@ import '../../../widgets/app/text/description_text_app.dart';
 import '../../../widgets/app/text/subtitle_text_app.dart';
 import '../../data/repositories/firebase_repository_impl.dart';
 
-class HomePage extends StatefulWidget {
+class PlayerPage extends StatefulWidget {
   final FirebaseRepositoryImpl firebaseRepository;
+  final String audioLink;
 
-  const HomePage({required this.firebaseRepository});
+  const PlayerPage({
+    super.key,
+    required this.firebaseRepository,
+    required this.audioLink,
+  });
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<PlayerPage> createState() => _PlayerPageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _PlayerPageState extends State<PlayerPage> {
   late YoutubePlayerController _controller;
   bool isPlayerReady = false;
 
@@ -27,9 +32,10 @@ class _HomePageState extends State<HomePage> {
     final youtubeLinks = widget.firebaseRepository.getYoutubeLinks();
 
     print('LOG ** youtubeLinks: $youtubeLinks');
+    print('LOG ** audioLink: ${widget.audioLink}');
     if (youtubeLinks.isNotEmpty) {
       _controller = YoutubePlayerController(
-        initialVideoId: YoutubePlayer.convertUrlToId(youtubeLinks[0])!,
+        initialVideoId: YoutubePlayer.convertUrlToId('https://youtu.be/${widget.audioLink}')!,
         flags: const YoutubePlayerFlags(
           autoPlay: false,
           mute: false,
@@ -64,7 +70,6 @@ class _HomePageState extends State<HomePage> {
       _controller.play();
     }
   }
-
 
   void _nextAudio() {
     final youtubeLinks = widget.firebaseRepository.getYoutubeLinks();
