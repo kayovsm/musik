@@ -5,7 +5,6 @@ import '../../../widgets/app/color/color_app.dart';
 import '../../../widgets/app/text/description_text_app.dart';
 import '../../../widgets/app/text/subtitle_text_app.dart';
 import '../../data/repositories/firebase_repository_impl.dart';
-import 'player_page.dart';
 
 class HomePage extends StatefulWidget {
   final FirebaseRepositoryImpl firebaseRepository;
@@ -21,6 +20,9 @@ class _HomePageState extends State<HomePage> {
   List<YoutubePlayerController> _controllers = [];
   List<Map<String, String>> videoDetails = [];
   bool isLoading = true;
+  YoutubePlayerController? _currentController;
+  String? _currentTitle;
+  String? _currentAuthor;
 
   @override
   void initState() {
@@ -85,12 +87,29 @@ class _HomePageState extends State<HomePage> {
     return title;
   }
 
+  void playAudio() {
+    if (_currentController!.value.isPlaying) {
+      _currentController!.pause();
+    } else {
+      _currentController!.play();
+    }
+  }
+
   @override
   void dispose() {
     for (var controller in _controllers) {
       controller.dispose();
     }
     super.dispose();
+  }
+
+  void _showBottomSheet(
+      YoutubePlayerController controller, String title, String author) {
+    setState(() {
+      _currentController = controller;
+      _currentTitle = title;
+      _currentAuthor = author;
+    });
   }
 
   @override
@@ -127,6 +146,23 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
+      floatingActionButton: _currentController != null
+          ? FloatingActionButton.extended(
+              onPressed: () {
+                playAudio();
+              },
+              label: Row(
+                children: [
+                  Icon(_currentController!.value.isPlaying
+                      ? Icons.pause
+                      : Icons.play_arrow),
+                  const SizedBox(width: 8),
+                  Text(_currentTitle ?? 'Título'),
+                ],
+              ),
+            )
+          : null,
+      floatingActionButtonLocation: FloatingActionButtonLocation.miniEndDocked,
     );
   }
 
@@ -196,16 +232,8 @@ class _HomePageState extends State<HomePage> {
       YoutubePlayerController controller, Map<String, String> videoDetail) {
     return GestureDetector(
       onTap: () {
-        print('LOG ** TAP ${videoDetail['id']}');
-
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => PlayerPage(
-              audioLink: videoDetail['id']!,
-              firebaseRepository: widget.firebaseRepository,
-            ),
-          ),
-        );
+        _showBottomSheet(
+            controller, videoDetail['title']!, videoDetail['author']!);
       },
       child: Row(
         children: [
