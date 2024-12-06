@@ -33,7 +33,7 @@ class UserPrefsController extends ChangeNotifier {
   }
 
   Future<void> _loadUserPreferences() async {
-    Map<String, String> preferences = {'fontSize': 'medium', 'theme': 'light'}; // valor padrão
+    Map<String, String> preferences = {'fontSize': 'small', 'theme': 'light'}; // valor padrão
     _fontSizeOption = FontSizeOption.values.firstWhere(
         (e) => e.toString().split('.').last == preferences['fontSize']);
     _themeMode = ThemeMode.values.firstWhere(

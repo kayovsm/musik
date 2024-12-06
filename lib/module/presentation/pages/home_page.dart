@@ -5,6 +5,10 @@ import '../../../widgets/app/color/color_app.dart';
 import '../../../widgets/app/text/description_text_app.dart';
 import '../../../widgets/app/text/subtitle_text_app.dart';
 import '../../data/repositories/firebase_repository_impl.dart';
+import '../widgets/audio_player_widget.dart';
+import '../widgets/bottom_sheet_widget.dart';
+import '../widgets/videos_list_widget.dart';
+import '../pages/player_page.dart';
 
 class HomePage extends StatefulWidget {
   final FirebaseRepositoryImpl firebaseRepository;
@@ -112,6 +116,28 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  Future<void> _navigateToPlayerPage() async {
+    if (_currentController != null) {
+      final result = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PlayerPage(
+            firebaseRepository: widget.firebaseRepository,
+            audioLink: _currentController!.metadata.videoId,
+            controller: _currentController!,
+          ),
+        ),
+      );
+
+      if (result != null) {
+        setState(() {
+          _currentTitle = result['title'];
+          _currentAuthor = result['author'];
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -122,17 +148,26 @@ class _HomePageState extends State<HomePage> {
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: isLoading
             ? const Center(child: CircularProgressIndicator())
-            : ListView.builder(
-                itemCount: youtubeLinks.length,
-                itemBuilder: (context, index) {
-                  return Column(
-                    children: [
-                      const SizedBox(height: 20),
-                      _buildAudioPlayer(
-                          _controllers[index], videoDetails[index]),
-                    ],
-                  );
-                },
+            : Column(
+                children: [
+                  Expanded(
+                    child: VideoListWidget(
+                      controllers: _controllers,
+                      videoDetails: videoDetails,
+                      onTap: _showBottomSheet,
+                    ),
+                  ),
+                  if (_currentController != null)
+                    BottomSheetWidget(
+                      controller: _currentController!,
+                      title: _currentTitle ?? 'Título',
+                      author: _currentAuthor ?? 'Autor',
+                      onPlayPause: playAudio,
+                      onNext: () {},
+                      onPrevious: () {},
+                      navigatorPlayer: _navigateToPlayerPage,
+                    ),
+                ],
               ),
       ),
       bottomNavigationBar: BottomAppBar(
@@ -146,23 +181,6 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
-      floatingActionButton: _currentController != null
-          ? FloatingActionButton.extended(
-              onPressed: () {
-                playAudio();
-              },
-              label: Row(
-                children: [
-                  Icon(_currentController!.value.isPlaying
-                      ? Icons.pause
-                      : Icons.play_arrow),
-                  const SizedBox(width: 8),
-                  Text(_currentTitle ?? 'Título'),
-                ],
-              ),
-            )
-          : null,
-      floatingActionButtonLocation: FloatingActionButtonLocation.miniEndDocked,
     );
   }
 
@@ -225,44 +243,6 @@ class _HomePageState extends State<HomePage> {
           ],
         );
       },
-    );
-  }
-
-  Widget _buildAudioPlayer(
-      YoutubePlayerController controller, Map<String, String> videoDetail) {
-    return GestureDetector(
-      onTap: () {
-        _showBottomSheet(
-            controller, videoDetail['title']!, videoDetail['author']!);
-      },
-      child: Row(
-        children: [
-          YoutubePlayer(
-            controller: controller,
-            showVideoProgressIndicator: false,
-            aspectRatio: 8 / 5,
-            width: 100,
-          ),
-          Flexible(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SubTitleTextApp(
-                    text: videoDetail['title'] ?? 'Carregando...',
-                    oneLine: true,
-                  ),
-                  DescriptionTextApp(
-                    text: videoDetail['author'] ?? 'Carregando...',
-                    oneLine: true,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

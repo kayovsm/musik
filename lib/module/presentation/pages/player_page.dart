@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:musik/module/presentation/widgets/controls_player_widget.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import '../../../widgets/app/text/description_text_app.dart';
 import '../../../widgets/app/text/subtitle_text_app.dart';
@@ -7,11 +8,13 @@ import '../../data/repositories/firebase_repository_impl.dart';
 class PlayerPage extends StatefulWidget {
   final FirebaseRepositoryImpl firebaseRepository;
   final String audioLink;
+  final YoutubePlayerController controller;
 
   const PlayerPage({
     super.key,
     required this.firebaseRepository,
     required this.audioLink,
+    required this.controller,
   });
 
   @override
@@ -25,6 +28,7 @@ class _PlayerPageState extends State<PlayerPage> {
   @override
   void initState() {
     super.initState();
+    _controller = widget.controller;
     _initializePlayer();
   }
 
@@ -34,34 +38,18 @@ class _PlayerPageState extends State<PlayerPage> {
     print('LOG ** youtubeLinks: $youtubeLinks');
     print('LOG ** audioLink: ${widget.audioLink}');
     if (youtubeLinks.isNotEmpty) {
-      _controller = YoutubePlayerController(
-        initialVideoId: YoutubePlayer.convertUrlToId('https://youtu.be/${widget.audioLink}')!,
-        flags: const YoutubePlayerFlags(
-          autoPlay: false,
-          mute: false,
-          hideControls: true, // Desativa os controles padrão do YouTube
-          controlsVisibleAtStart:
-              false, // Desativa a visibilidade inicial dos controles
-        ),
-      )..addListener(() {
-          if (_controller.value.isReady && mounted) {
-            setState(() {
-              isPlayerReady = true;
-            });
-          }
-        });
+      _controller.addListener(() {
+        if (_controller.value.isReady && mounted) {
+          setState(() {
+            isPlayerReady = true;
+          });
+        }
+      });
       setState(() {
         isPlayerReady = true;
       });
     }
   }
-
-  // void _videoListener() {
-  //   if (_controller.value.position == _controller.metadata.duration) {
-  //     print('LOG ** NEXT AUDIO');
-  //     _nextAudio();
-  //   }
-  // }
 
   void _playAudio() {
     if (_controller.value.isPlaying) {
@@ -98,10 +86,12 @@ class _PlayerPageState extends State<PlayerPage> {
     }
   }
 
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
+  void _returnToHomePage() {
+    Navigator.pop(context, {
+      'title': _controller.metadata.title,
+      'author': _controller.metadata.author,
+      'videoId': _controller.metadata.videoId,
+    });
   }
 
   @override
@@ -109,6 +99,10 @@ class _PlayerPageState extends State<PlayerPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('APP MUSIK'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: _returnToHomePage,
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -125,14 +119,11 @@ class _PlayerPageState extends State<PlayerPage> {
                         controller: _controller,
                         showVideoProgressIndicator: true,
                         progressIndicatorColor: Colors.amber,
-                        onReady: () {
-                          _controller.addListener(() {});
-                          // _controller.addListener(_controller.value.position ==
-                          //         _controller.metadata.duration
-                          //     ? _nextAudio
-                          //     : () {});
-                        },
-                        onEnded: (metadata) => _nextAudio(),
+                        onReady: () => _controller.addListener(() {}),
+                        onEnded: (metadata) => ControlsPlayerWidget(
+                          controller: _controller,
+                          firebaseRepository: widget.firebaseRepository,
+                        ).nextAudio(),
                       ),
                     ),
                     SubTitleTextApp(text: _controller.metadata.title),
@@ -141,7 +132,6 @@ class _PlayerPageState extends State<PlayerPage> {
                       padding: const EdgeInsets.symmetric(horizontal: 14),
                       child: ProgressBar(
                         controller: _controller,
-                        // isExpanded: true,
                         colors: const ProgressBarColors(
                           playedColor: Colors.red,
                           handleColor: Colors.redAccent,
