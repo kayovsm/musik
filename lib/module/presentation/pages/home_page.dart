@@ -1,19 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
-import '../../../widgets/app/color/color_app.dart';
-import '../../../widgets/app/text/description_text_app.dart';
-import '../../../widgets/app/text/subtitle_text_app.dart';
-import '../../data/repositories/firebase_repository_impl.dart';
-import '../widgets/audio_player_widget.dart';
+import '../../data/repositories/music_repository_impl.dart';
 import '../widgets/bottom_sheet_widget.dart';
 import '../widgets/videos_list_widget.dart';
 import '../pages/player_page.dart';
 
 class HomePage extends StatefulWidget {
-  final FirebaseRepositoryImpl firebaseRepository;
+  final MusicRepositoryImpl musicRepository;
 
-  const HomePage({required this.firebaseRepository});
+  const HomePage({super.key, required this.musicRepository});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -21,7 +17,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<String> youtubeLinks = [];
-  List<YoutubePlayerController> _controllers = [];
+  final List<YoutubePlayerController> _controllers = [];
   List<Map<String, String>> videoDetails = [];
   bool isLoading = true;
   YoutubePlayerController? _currentController;
@@ -35,7 +31,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _initializePlayer() async {
-    youtubeLinks = await widget.firebaseRepository.getYoutubeLinks();
+    youtubeLinks = await widget.musicRepository.getYoutubeLinks();
     final yt = YoutubeExplode();
 
     if (youtubeLinks.isNotEmpty) {
@@ -122,7 +118,7 @@ class _HomePageState extends State<HomePage> {
         context,
         MaterialPageRoute(
           builder: (context) => PlayerPage(
-            firebaseRepository: widget.firebaseRepository,
+            musicRepository: widget.musicRepository,
             audioLink: _currentController!.metadata.videoId,
             controller: _currentController!,
           ),
@@ -204,7 +200,7 @@ class _HomePageState extends State<HomePage> {
                 if (link.contains('?')) {
                   link = link.substring(0, link.indexOf('?'));
                 }
-                widget.firebaseRepository.addYoutubeLink(link);
+                widget.musicRepository.addYoutubeLink(link);
                 final yt = YoutubeExplode();
                 final videoId = YoutubePlayer.convertUrlToId(link)!;
                 final video = await yt.videos.get(videoId);

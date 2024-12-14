@@ -1,26 +1,30 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'module/data/repositories/firebase_repository_impl.dart';
-import 'module/presentation/pages/home_page.dart';
+import 'module/data/repositories/music_repository_impl.dart';
+import 'module/presentation/pages/login_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
-  final firebaseRepository = FirebaseRepositoryImpl();
+  final firebaseRepository = MusicRepositoryImpl();
   await firebaseRepository.initialize();
-  runApp(MyApp(firebaseRepository: firebaseRepository));
+  runApp(MyApp(musicRepository: firebaseRepository));
 }
 
 class MyApp extends StatelessWidget {
-  final FirebaseRepositoryImpl firebaseRepository;
+  final MusicRepositoryImpl musicRepository;
 
-  const MyApp({super.key, required this.firebaseRepository});
+  const MyApp({super.key, required this.musicRepository});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: HomePage(firebaseRepository: firebaseRepository),
+      title: 'Musik',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: LoginPage(musicRepository: musicRepository),
     );
   }
 }

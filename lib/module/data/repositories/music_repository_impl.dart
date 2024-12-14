@@ -1,10 +1,42 @@
-import '../../domain/repositories/music_repository.dart';
-import '../models/music_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class MusicRepositoryImpl implements MusicRepository {
-  @override
-  Future<MusicModel> getMusic(String url) async {
-    // Aqui você pode adicionar lógica para buscar a música de uma API, se necessário
-    return MusicModel(url: url);
+class MusicRepositoryImpl {
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  final FirebaseAuth auth = FirebaseAuth.instance;
+  List<String> _youtubeLinks = [];
+
+  Future<void> initialize() async {
+    _youtubeLinks = await getYoutubeLinksFromFirebase();
+  }
+
+  Future<List<String>> getYoutubeLinksFromFirebase() async {
+    final user = auth.currentUser;
+    if (user == null) {
+      throw Exception('No user is currently logged in.');
+    }
+
+    final snapshot = await firestore
+        .collection('users')
+        .doc(user.uid)
+        .collection('music')
+        .get();
+    return snapshot.docs.map((doc) => doc['music_url'] as String).toList();
+  }
+
+  List<String> getYoutubeLinks() {
+    return _youtubeLinks;
+  }
+
+  Future<void> addYoutubeLink(String url) async {
+    final user = auth.currentUser;
+    if (user == null) {
+      throw Exception('No user is currently logged in.');
+    }
+
+    await firestore.collection('users').doc(user.uid).collection('music').add({
+      'music_url': url,
+    });
+    _youtubeLinks.add(url);
   }
 }

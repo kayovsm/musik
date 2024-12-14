@@ -3,16 +3,16 @@ import 'package:musik/module/presentation/widgets/controls_player_widget.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import '../../../widgets/app/text/description_text_app.dart';
 import '../../../widgets/app/text/subtitle_text_app.dart';
-import '../../data/repositories/firebase_repository_impl.dart';
+import '../../data/repositories/music_repository_impl.dart';
 
 class PlayerPage extends StatefulWidget {
-  final FirebaseRepositoryImpl firebaseRepository;
+  final MusicRepositoryImpl musicRepository;
   final String audioLink;
   final YoutubePlayerController controller;
 
   const PlayerPage({
     super.key,
-    required this.firebaseRepository,
+    required this.musicRepository,
     required this.audioLink,
     required this.controller,
   });
@@ -33,7 +33,7 @@ class _PlayerPageState extends State<PlayerPage> {
   }
 
   Future<void> _initializePlayer() async {
-    final youtubeLinks = widget.firebaseRepository.getYoutubeLinks();
+    final youtubeLinks = widget.musicRepository.getYoutubeLinks();
 
     print('LOG ** youtubeLinks: $youtubeLinks');
     print('LOG ** audioLink: ${widget.audioLink}');
@@ -60,7 +60,7 @@ class _PlayerPageState extends State<PlayerPage> {
   }
 
   void _nextAudio() {
-    final youtubeLinks = widget.firebaseRepository.getYoutubeLinks();
+    final youtubeLinks = widget.musicRepository.getYoutubeLinks();
     final int currentIndex = youtubeLinks
         .indexOf('https://youtu.be/${_controller.metadata.videoId}');
 
@@ -74,7 +74,7 @@ class _PlayerPageState extends State<PlayerPage> {
   }
 
   void _previousAudio() {
-    final youtubeLinks = widget.firebaseRepository.getYoutubeLinks();
+    final youtubeLinks = widget.musicRepository.getYoutubeLinks();
     final int currentIndex = youtubeLinks
         .indexOf('https://youtu.be/${_controller.metadata.videoId}');
 
@@ -122,7 +122,7 @@ class _PlayerPageState extends State<PlayerPage> {
                         onReady: () => _controller.addListener(() {}),
                         onEnded: (metadata) => ControlsPlayerWidget(
                           controller: _controller,
-                          firebaseRepository: widget.firebaseRepository,
+                          firebaseRepository: widget.musicRepository,
                         ).nextAudio(),
                       ),
                     ),
@@ -210,7 +210,7 @@ class _PlayerPageState extends State<PlayerPage> {
                 if (link.contains('?')) {
                   link = link.substring(0, link.indexOf('?'));
                 }
-                widget.firebaseRepository.addYoutubeLink(link);
+                widget.musicRepository.addYoutubeLink(link);
                 setState(() {
                   _initializePlayer();
                 });

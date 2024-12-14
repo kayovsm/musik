@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
-import '../../data/repositories/firebase_repository_impl.dart';
+import '../../data/repositories/music_repository_impl.dart';
 
 class ControlsPlayerWidget extends StatefulWidget {
   final YoutubePlayerController controller;
-  final FirebaseRepositoryImpl firebaseRepository;
+  final MusicRepositoryImpl firebaseRepository;
 
   const ControlsPlayerWidget(
       {super.key, required this.controller, required this.firebaseRepository});
@@ -37,8 +37,8 @@ class ControlsPlayerWidget extends StatefulWidget {
 
   void previousAudio() {
     final youtubeLinks = firebaseRepository.getYoutubeLinks();
-    final int currentIndex = youtubeLinks
-        .indexOf('https://youtu.be/${controller.metadata.videoId}');
+    final int currentIndex =
+        youtubeLinks.indexOf('https://youtu.be/${controller.metadata.videoId}');
 
     print('LOG ** PREVIOUS currentIndex: $currentIndex');
 
