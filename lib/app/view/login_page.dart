@@ -26,6 +26,26 @@ class _LoginPageState extends State<LoginPage> {
   final passwordController = TextEditingController();
   final AuthRepositoryImpl _authRepository = AuthRepositoryImpl();
 
+  @override
+  void initState() {
+    super.initState();
+    _checkLoginStatus();
+  }
+
+  Future<void> _checkLoginStatus() async {
+    final isLoggedIn = await _authRepository.isUserLoggedIn();
+    if (isLoggedIn) {
+      final userId = await _authRepository.getCurrentUserId();
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              HomePage(musicRepository: widget.musicRepository, userId: userId),
+        ),
+      );
+    }
+  }
+
   Future<void> _login() async {
     try {
       await _authRepository.login(
