@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
-import '../../data/repositories/music_repository_impl.dart';
+import '../../models/repositories/music_repository_impl.dart';
 
 class ControlsPlayerWidget extends StatefulWidget {
   final YoutubePlayerController controller;

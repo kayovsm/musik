@@ -17,7 +17,9 @@ class InputTextApp extends StatelessWidget {
   final FocusNode? focusNode;
   final bool isRequired;
   final String? iconLeft;
+  final Widget? iconRight;
   final TextInputFormatter? inputFormatter;
+  final bool isPassword;
 
   const InputTextApp({
     super.key,
@@ -30,7 +32,9 @@ class InputTextApp extends StatelessWidget {
     this.focusNode,
     this.isRequired = false,
     this.iconLeft,
+    this.iconRight,
     this.inputFormatter,
+    this.isPassword = false,
   });
 
   @override
@@ -64,8 +68,9 @@ class InputTextApp extends StatelessWidget {
             Expanded(
               child: TextField(
                 cursorColor: Theme.of(context).textTheme.bodyMedium!.color!,
+                obscureText: isPassword,
                 maxLength: maxChar,
-                maxLines: null,
+                maxLines: isPassword ? 1 : null,
                 controller: controller,
                 onChanged: onChanged,
                 keyboardType: keyboardType,
@@ -95,6 +100,7 @@ class InputTextApp extends StatelessWidget {
                               ),
                             )
                           : null,
+                  suffixIcon: iconRight,
                   fillColor: ColorApp.transparent,
                   label: DescriptionTextApp(
                     text: label,
@@ -132,10 +138,13 @@ class NoLeadingSpacesFormatter extends TextInputFormatter {
     TextEditingValue oldValue,
     TextEditingValue newValue,
   ) {
+    print('LOG *** newValue: ${newValue.text}');
     String newText = newValue.text.trimLeft();
+    int offset =
+        newValue.selection.baseOffset - (newValue.text.length - newText.length);
     return newValue.copyWith(
       text: newText,
-      selection: TextSelection.collapsed(offset: newText.length),
+      selection: TextSelection.collapsed(offset: offset),
     );
   }
 }

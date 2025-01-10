@@ -27,13 +27,13 @@ class SubTitleTextApp extends StatelessWidget {
     } else {
       switch (userPrefsController.fontSizeOption) {
         case FontSizeOption.small:
-          fontSize = 15.5;
+          fontSize = 15;
           break;
         case FontSizeOption.medium:
-          fontSize = 17;
+          fontSize = 16.5;
           break;
         case FontSizeOption.large:
-          fontSize = 18.5;
+          fontSize = 18;
           break;
       }
     }

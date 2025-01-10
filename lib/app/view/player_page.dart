@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:musik/module/presentation/widgets/controls_player_widget.dart';
+import 'package:musik/app/view/widgets/controls_player_widget.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
-import '../../../widgets/app/text/description_text_app.dart';
-import '../../../widgets/app/text/subtitle_text_app.dart';
-import '../../data/repositories/music_repository_impl.dart';
+import '../../widgets/app/text/description_text_app.dart';
+import '../../widgets/app/text/subtitle_text_app.dart';
+import '../models/repositories/music_repository_impl.dart';
 
 class PlayerPage extends StatefulWidget {
   final MusicRepositoryImpl musicRepository;

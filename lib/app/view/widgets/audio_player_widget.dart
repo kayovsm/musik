@@ -25,7 +25,7 @@ class AudioPlayerWidget extends StatelessWidget {
             controller: controller,
             showVideoProgressIndicator: false,
             aspectRatio: 8 / 5,
-            width: 100,
+            width: 80,
           ),
           Flexible(
             child: Padding(
@@ -37,9 +37,15 @@ class AudioPlayerWidget extends StatelessWidget {
                     text: videoDetail['title'] ?? 'Carregando...',
                     oneLine: true,
                   ),
-                  DescriptionTextApp(
-                    text: videoDetail['author'] ?? 'Carregando...',
-                    oneLine: true,
+                  Row(
+                    children: [
+                      DescriptionTextApp(
+                        text: videoDetail['author'] ?? 'Carregando...',
+                        oneLine: true,
+                      ),
+                      const DescriptionTextApp(text: ' • '),
+                      DescriptionTextApp(text: videoDetail['time'] ?? '0:00'),
+                    ],
                   ),
                 ],
               ),

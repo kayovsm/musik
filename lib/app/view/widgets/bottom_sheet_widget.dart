@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import '../../../widgets/app/text/description_text_app.dart';
 import '../../../widgets/app/text/subtitle_text_app.dart';
-import '../../data/repositories/music_repository_impl.dart';
-import '../pages/player_page.dart';
+import '../../models/repositories/music_repository_impl.dart';
+import '../player_page.dart';
 
 class BottomSheetWidget extends StatelessWidget {
   final YoutubePlayerController controller;

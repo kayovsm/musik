@@ -1,13 +1,14 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:musik/module/domain/entities/user_entity.dart';
-import '../../../../widgets/app/text/input_text_app.dart';
-import '../../../../widgets/app/asset/icons_app.dart';
-import '../../../../widgets/app/button/button_text_app.dart';
-import '../../../../widgets/app/color/color_app.dart';
-import '../../../../widgets/app/text/description_text_app.dart';
-import '../../../../widgets/app/text/title_text_app.dart';
-import '../../data/repositories/auth_repository_impl.dart';
-import '../../data/repositories/music_repository_impl.dart';
+import 'package:musik/app/models/entities/user_entity.dart';
+import '../../../widgets/app/text/input_text_app.dart';
+import '../../../widgets/app/asset/icons_app.dart';
+import '../../../widgets/app/button/button_text_app.dart';
+import '../../../widgets/app/color/color_app.dart';
+import '../../../widgets/app/text/description_text_app.dart';
+import '../../../widgets/app/text/title_text_app.dart';
+import '../models/repositories/auth_repository_impl.dart';
+import '../models/repositories/music_repository_impl.dart';
 import 'home_page.dart';
 import 'signup_page.dart';
 
@@ -32,11 +33,12 @@ class _LoginPageState extends State<LoginPage> {
             email: emailController.text.trim(),
             password: passwordController.text.trim()),
       );
+      final userId = await _authRepository.getCurrentUserId();
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) =>
-              HomePage(musicRepository: widget.musicRepository),
+              HomePage(musicRepository: widget.musicRepository, userId: userId),
         ),
       );
     } catch (e) {

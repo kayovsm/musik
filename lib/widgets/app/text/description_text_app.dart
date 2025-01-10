@@ -28,13 +28,13 @@ class DescriptionTextApp extends StatelessWidget {
     } else {
       switch (userPrefsController.fontSizeOption) {
         case FontSizeOption.small:
-          fontSize = 15;
+          fontSize = 14;
           break;
         case FontSizeOption.medium:
-          fontSize = 16.5;
+          fontSize = 15.5;
           break;
         case FontSizeOption.large:
-          fontSize = 18;
+          fontSize = 17;
           break;
       }
     }

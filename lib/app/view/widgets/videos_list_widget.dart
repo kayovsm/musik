@@ -5,7 +5,7 @@ import 'audio_player_widget.dart';
 class VideoListWidget extends StatelessWidget {
   final List<YoutubePlayerController> controllers;
   final List<Map<String, String>> videoDetails;
-  final Function(YoutubePlayerController, String, String) onTap;
+  final Function(YoutubePlayerController, String, String, String) onTap;
 
   const VideoListWidget({
     super.key,
@@ -29,6 +29,7 @@ class VideoListWidget extends StatelessWidget {
                 controllers[index],
                 videoDetails[index]['title']!,
                 videoDetails[index]['author']!,
+                videoDetails[index]['time']!,
               ),
             ),
           ],

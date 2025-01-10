@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../domain/entities/user_entity.dart';
-import '../../domain/repositories/auth_repository.dart';
+import '../entities/user_entity.dart';
+import 'auth_repository.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -25,7 +25,8 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<void> register(UserEntity user) async {
     try {
       final email = '${user.email}$domain';
-      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+      UserCredential userCredential =
+          await _auth.createUserWithEmailAndPassword(
         email: email,
         password: user.password,
       );
@@ -38,6 +39,15 @@ class AuthRepositoryImpl implements AuthRepository {
     } catch (e) {
       throw Exception('Registration failed: $e');
     }
+  }
+
+  @override
+  Future<String> getCurrentUserId() async {
+    final user = _auth.currentUser;
+    if (user == null) {
+      throw Exception('No user is currently logged in.');
+    }
+    return user.uid;
   }
 
   @override
